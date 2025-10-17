@@ -38,14 +38,11 @@ const takeScreenshot = async (site) => {
       await page.setUserAgent(
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
       )
-
-      // Navigate with a longer timeout and lenient wait condition
       await page.goto(site.url, {
-        waitUntil: "networkidle2", // Use 'networkidle2' for faster loading
-        timeout: 120000, // Increase timeout to 2 minutes
+        waitUntil: "networkidle2",
+        timeout: 30000,
       })
 
-      // Wait for additional time to ensure dynamic content loads
       await new Promise((resolve) => setTimeout(resolve, 5000))
 
       const screenshot = await page.screenshot({
@@ -56,11 +53,8 @@ const takeScreenshot = async (site) => {
       return screenshot
     } catch (err) {
       console.error(`❌ Failed to capture ${site.url}:`, err.message)
-      // Optionally, add retry logic here
     } finally {
-      // Close the page to free resources
       if (page) await page.close()
-      // Add a small delay between captures to avoid overwhelming the browser
       await new Promise((resolve) => setTimeout(resolve, 1000))
     }
 
@@ -72,6 +66,9 @@ const takeScreenshot = async (site) => {
 
 app.use(cors(corsOptions))
 app.get("/screenshot", async (req, res) => {
+  if (!req.query.url) {
+    return res.send("No URL provided")
+  }
   const image = await takeScreenshot({ url: req.query.url })
   res.send({
     image: "data:image/png;base64," + Buffer.from(image).toString("base64"),
