@@ -1,5 +1,12 @@
 const express = require("express")
 const puppeteer = require("puppeteer")
+const cors = require("cors")
+
+var corsOptions = {
+  origin: "*",
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+
 
 const PORT = process.env.PORT || 3011
 const app = express()
@@ -62,6 +69,8 @@ const takeScreenshot = async (site) => {
   }
 }
 
+
+app.use(cors(corsOptions))
 app.get("/screenshot", async (req, res) => {
   const image = await takeScreenshot({ url: req.query.url })
   res.send({
