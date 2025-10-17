@@ -11,8 +11,6 @@ COPY package*.json ./
 
 RUN npm install
 
-RUN npx puppeteer browsers install chrome
-
 COPY . .
 
 FROM node:21.2.0-slim AS runner

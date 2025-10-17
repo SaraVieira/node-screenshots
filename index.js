@@ -3,6 +3,8 @@ const puppeteer = require("puppeteer")
 
 const PORT = process.env.PORT || 3011
 const app = express()
+ const environment = process.env.NODE_ENV
+ const isProduction = environment === "production"
 
 const takeScreenshot = async (site) => {
   {
@@ -11,6 +13,7 @@ const takeScreenshot = async (site) => {
     }
     let page
     const browser = await puppeteer.launch({
+      ...(isProduction && { executablePath: process.env.CHROMIUM_PATH }),
       headless: "new",
       defaultViewport: { width: 1920, height: 1080 },
       args: [
